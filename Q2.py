@@ -7,47 +7,46 @@ import seaborn as sns
 import os 
 import numpy as np
 
+# File paths
+file_paths = {
+    "num": "rmpCapstoneNum.csv",
+    "qual": "rmpCapstoneQual.csv",
+    "tags": "rmpCapstoneTags.csv"
+}
 
-# General info, Define  column names
-column_names = ["Average Rating", 
-                "Average Difficulty", 
-                "Number of ratings",
-                "Received a 'pepper'?",
-                "The proportion of students that said they would take the class again",
-                "The number of ratings coming from online classes",
-                "Male",
-                "Female"]
-df_num = pd.read_csv("rmpCapstoneNum.csv", header=None, names=column_names)
-print(df_num.columns)
+# Define column names
+columns = {
+    "num": [
+        "Average Rating", "Average Difficulty", "Number of Ratings",
+        "Received a 'pepper'?", "Proportion Would Retake",
+        "Online Ratings Count", "Male", "Female"
+    ],
+    "qual": ["Major/Field", "University", "State"],
+    "tags": [
+        "Tough Grader", "Good Feedback", "Respected", "Lots to Read",
+        "Participation Matters", "Don’t Skip Class", "Lots of Homework",
+        "Inspirational", "Pop Quizzes", "Accessible", "So Many Papers",
+        "Clear Grading", "Hilarious", "Test Heavy", "Graded by Few Things",
+        "Amazing Lectures", "Caring", "Extra Credit", "Group Projects",
+        "Lecture Heavy"
+    ]
+}
 
-# Major|University|States, define column names
-column_names2 = ["Major/Field", "University", "US State (2 letter abbreviation)" ]
-df_qual = pd.read_csv("rmpCapstoneQual.csv", header=None, names=column_names2)
-print(df_qual.columns)
+# Function to load data with specified column names
+def load_data(file_path, col_names):
+    return pd.read_csv(file_path, header=None, names=col_names)
 
-# 3 Tags, define column names
-column_names3 = ["Tough grader", 
-                 "Good feedback", 
-                 "Respected", 
-                 "Lots to read", 
-                 "Participation matters", 
-                 "Don’t skip class or you will not pass", 
-                 "Lots of homework", 
-                 "Inspirational", 
-                 "Pop quizzes!", 
-                 "Accessible", 
-                 "So many papers", 
-                 "Clear grading", 
-                 "Hilarious",
-                 "Test heavy", 
-                 "Graded by few things", 
-                 "Amazing lectures", 
-                 "Caring", 
-                 "Extra credit", 
-                 "Group projects", 
-                 "Lecture heavy"]
-df_tags = pd.read_csv("rmpCapstoneTags.csv", header=None, names=column_names3)
-print(df_tags.columns)
+# Load datasets
+df_num = load_data(file_paths["num"], columns["num"])
+df_qual = load_data(file_paths["qual"], columns["qual"])
+df_tags = load_data(file_paths["tags"], columns["tags"])
+
+# Display column names for verification
+print("Numerical DataFrame Columns:", df_num.columns.tolist())
+print("Qualitative DataFrame Columns:", df_qual.columns.tolist())
+print("Tags DataFrame Columns:", df_tags.columns.tolist())
+
+
 
 
 ## Q2. Is there a gender difference in the spread (variance/dispersion) 
@@ -61,17 +60,17 @@ print("H1: There is a no gender difference in the spread of the ratings distribu
 # Set a threshold for the minimum number of ratings
 k = 5.37  # This df_num["Number of ratings"].mean()
 
-# Step 1: Apply the threshold
-filtered_data = df_num[df_num["Number of ratings"] >= k]
+# Threshold
+filtered_data = df_num[df_num["Number of Ratings"] >= k]
 
-# Step 2: Drop rows with missing average ratings
+# Drop rows with missing average ratings
 filtered_data = filtered_data.dropna(subset=["Average Rating"])
 
-# Step 3: Separate ratings by gender
+# Separate ratings by gender
 male_ratings = filtered_data[filtered_data["Male"] == 1]["Average Rating"]
 female_ratings = filtered_data[filtered_data["Female"] == 1]["Average Rating"]
 
-# Step 4: Calculate variances for each gender
+# Calculate variances for each gender
 male_variance = np.var(male_ratings, ddof=1)  # Sample variance
 female_variance = np.var(female_ratings, ddof=1)
 
